@@ -21,7 +21,7 @@ require "pry-byebug"
 require "pry-state"
 require "active_support/all"
 
-require "aws_cron"
+require "dogstatsd/instrumentation"
 
 Dir[File.join(File.dirname(__FILE__), "support/shared_contexts/**/*.rb")].each { |file| require file }
 

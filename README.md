@@ -1,10 +1,10 @@
 # Dogstatsd::Instrumentation
 
-[![Gem Version](https://badge.fury.io/rb/aws_cron.svg)](http://badge.fury.io/rb/aws_cron)
-[![CircleCI](https://circleci.com/gh/wealthsimple/aws_cron.svg?style=shield)](https://circleci.com/gh/wealthsimple/aws_cron) 
-[![Dependency Status](https://gemnasium.com/badges/github.com/wealthsimple/aws_cron.svg)](https://gemnasium.com/github.com/wealthsimple/aws_cron)
-[![Code Climate](https://codeclimate.com/github/wealthsimple/aws_cron/badges/gpa.svg)](https://codeclimate.com/github/wealthsimple/aws_cron)
-[![codecov](https://codecov.io/gh/wealthsimple/aws_cron/branch/master/graph/badge.svg)](https://codecov.io/gh/wealthsimple/aws_cron)
+[![Gem Version](https://badge.fury.io/rb/dogstatsd-instrumentation.svg)](http://badge.fury.io/rb/dogstatsd-instrumentation)
+[![CircleCI](https://circleci.com/gh/wealthsimple/dogstatsd-instrumentation.svg?style=shield)](https://circleci.com/gh/wealthsimple/dogstatsd-instrumentation) 
+[![Dependency Status](https://gemnasium.com/badges/github.com/wealthsimple/dogstatsd-instrumentation.svg)](https://gemnasium.com/github.com/wealthsimple/dogstatsd-instrumentation)
+[![Code Climate](https://codeclimate.com/github/wealthsimple/dogstatsd-instrumentation/badges/gpa.svg)](https://codeclimate.com/github/wealthsimple/dogstatsd-instrumentation)
+[![codecov](https://codecov.io/gh/wealthsimple/dogstatsd-instrumentation/branch/master/graph/badge.svg)](https://codecov.io/gh/wealthsimple/dogstatsd-instrumentation)
 [![Gitter chat](https://img.shields.io/gitter/room/wealthsimple/Lobby.svg?style=flat)](https://gitter.im/wealthsimple/Lobby)
 
 
@@ -95,7 +95,7 @@ end
 For a secure install, type the following (recommended):
 
     gem cert --add <(curl --location --silent /gem-public.pem)
-    gem install aws_cron --trust-policy MediumSecurity
+    gem install dogstatsd-instrumentation --trust-policy MediumSecurity
 
 NOTE: A HighSecurity trust policy would be best but MediumSecurity enables signed gem verification
 while allowing the installation of unsigned dependencies since they are beyond the scope of this
@@ -103,11 +103,11 @@ gem.
 
 For an insecure install, type the following (not recommended):
 
-    gem install aws_cron
+    gem install dogstatsd-instrumentation
 
 Add the following to your Gemfile:
 
-    gem "aws_cron"
+    gem "dogstatsd-instrumentation"
 
 # Tests
 
