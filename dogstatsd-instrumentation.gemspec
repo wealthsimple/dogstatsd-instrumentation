@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email = ["marco@marcotc.com"]
   spec.homepage = "https://github.com/wealthsimple/dogstatsd-instrumentation"
   spec.summary = 'Reports instrumention metrics from various Ruby web frameworks to Datadog.'
-  spec.description = 'This gem processes relevant ActiveSupport::Notifications for Rails, Sinatra and Rake applications, sending metrics to Datadog.'
+  spec.description = 'Processes relevant ActiveSupport::Notifications from Rails, Sinatra and Rake applications, sending them to Datadog.'
   spec.license = "MIT"
 
   if File.exist?(Gem.default_key_path) && File.exist?(Gem.default_cert_path)
