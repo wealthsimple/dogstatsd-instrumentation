@@ -28,63 +28,10 @@
 
 # Features
 
-AwsCron does all the housekeeping related to handling requests from [AWS Elastic Beanstalk Periodic Tasks](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html#worker-periodictasks).
-* Handles HTTP responses, even in case of exceptions
-* Reliable error logging, using your preferred logger
-* Timezone-aware cron scheduling
-  * AWS only allows UTC scheduling. AwsCron helps you use your desired timezone instead. 
+DogStatsd::Instrumentation collects various [ActiveSupport::Notifications](http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html) and sends them to StatsD, more precisely, Datadog's DogStatsD.
 
-Keep in mind that you still have to set up an AWS Elastic Beanstalk environment with a proper `cron.yml` file.
 
 ## Examples
-
-### Rails
-
-```ruby
-class MyAwsControllerResponsibleForCronCalls
-  include AwsCron::Controller
-  
-  timezone 'America/New_York'
-   
-  def foo_endpoint
-    run { GenericTask.run } # No timezone checks made, just response handling and logging
-  end
-  
-  def timezoned_9am_endpoint
-    run_in_tz '0 9 * * *' do
-      TimezoneSpecific9AMTask.run
-    end
-  end
-end
-```
-
-### Complex example
-
-```ruby
-class MyAwsControllerResponsibleForCronCalls
-  include AwsCron::Controller
-   
-  def foo_endpoint
-    run { GenericTask.run }
-  end
-  
-  def timezoned_9am_endpoint
-    run_in_tz '0 9 * * *' do
-      TimezoneSpecific9AMTask.run
-    end
-  end
-  
-  protected
-
-  def time_provider # Prefer using `timezone 'ZONE'`, unless you want a custom time provider
-    ActiveSupport::TimeZone.new('America/New_York')
-  end
-  
-  def return_object # AWS Scheduler always expects ok, even in case of errors
-    render :json => {message: 'ok'}
-  end
-end
-```
 
 # Requirements
 
