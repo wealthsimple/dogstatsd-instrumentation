@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Dogstatsd
+module DogStatsd
   module Instrumentation
     # Gem identity information.
     module Identity
@@ -9,7 +9,7 @@ module Dogstatsd
       end
 
       def self.label
-        "Dogstatsd::Instrumentation"
+        "DogStatsd::Instrumentation"
       end
 
       def self.version

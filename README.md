@@ -1,4 +1,4 @@
-# Dogstatsd::Instrumentation
+# DogStatsd::Instrumentation
 
 [![Gem Version](https://badge.fury.io/rb/dogstatsd-instrumentation.svg)](http://badge.fury.io/rb/dogstatsd-instrumentation)
 [![CircleCI](https://circleci.com/gh/wealthsimple/dogstatsd-instrumentation.svg?style=shield)](https://circleci.com/gh/wealthsimple/dogstatsd-instrumentation) 

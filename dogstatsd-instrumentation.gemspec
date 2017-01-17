@@ -4,8 +4,8 @@ $LOAD_PATH.push File.expand_path("../lib", __FILE__)
 require "dogstatsd/instrumentation/identity"
 
 Gem::Specification.new do |spec|
-  spec.name = Dogstatsd::Instrumentation::Identity.name
-  spec.version = Dogstatsd::Instrumentation::Identity.version
+  spec.name = DogStatsd::Instrumentation::Identity.name
+  spec.version = DogStatsd::Instrumentation::Identity.version
   spec.platform = Gem::Platform::RUBY
   spec.authors = ["Marco Costa"]
   spec.email = ["marco@marcotc.com"]
@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency 'dogstatsd-ruby', "~> 2"
-  spec.add_dependency 'gem_config', '~> 0'
+  spec.add_runtime_dependency 'gem_config', '~> 0'
 
   spec.add_development_dependency "rake", "~> 11.0"
   spec.add_development_dependency "gemsmith", "~> 8.1"
