@@ -2,37 +2,77 @@ require 'spec_helper'
 require 'active_support/testing/time_helpers'
 require 'action_controller/api'
 
-describe DogStatsd::Instrumentation::Request do
-  subject { described_class.configure { |_|} }
-
-  context 'with base payload empty' do
-    it 'should measure duration' do
-      subject
-      expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: [])
-
-      ActiveSupport::Notifications.instrument('process_action.action_controller', {})
+module DogStatsd::Instrumentation
+  describe Request do
+    def send_metric(payload={})
+      ActiveSupport::Notifications.instrument('process_action.action_controller.duration', payload)
     end
 
-    it 'should measure custom runtime' do
-      subject
-      expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: [])
-      expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.db_runtime', be_a(Numeric), tags: [])
+    context 'with no configuration' do
+      before(:each) { described_class.configure { |_|} }
 
-      ActiveSupport::Notifications.instrument('process_action.action_controller', {'db_runtime': 1})
+      context 'with base payload empty' do
+        it 'should measure duration' do
+          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: [])
+
+          send_metric
+        end
+
+        it 'should measure custom runtime' do
+          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: [])
+          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.db_runtime', be_a(Numeric), tags: [])
+
+          send_metric 'db_runtime': 1
+        end
+      end
+
+      context 'with populated payload' do
+        it 'should produce tags' do
+          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: ['controller:controller', 'action:action', 'method:method', 'status:status'])
+
+          send_metric(
+            {
+              controller: 'controller',
+              action: 'action',
+              method: 'method',
+              status: 'status',
+            }
+          )
+        end
+      end
     end
-  end
 
-  context 'with populated payload' do
-    it 'should produce tags' do
-      subject
-      expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: ['controller:controller', 'action:action', 'method:method', 'status:status'])
+    context 'with feature disabled' do
+      before(:each) do
+        described_class.configure do |c|
+          c.enabled = false
+        end
+      end
 
-      ActiveSupport::Notifications.instrument('process_action.action_controller', {
-        controller: 'controller',
-        action: 'action',
-        method: 'method',
-        status: 'status',
-      })
+      it 'should do nothing' do
+        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).never
+        send_metric
+      end
+    end
+
+    context 'with base tags' do
+      let(:base_tags) { {t1: 1} }
+
+      before(:each) do
+        described_class.configure do |c|
+          c.base_tags = base_tags
+        end
+      end
+
+      it 'should receive base tags' do
+        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: Request::Subscriber.tagify(base_tags))
+        send_metric
+      end
+
+      it 'should merge base tags' do
+        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: Request::Subscriber.tagify(base_tags.merge controller: 'controller'))
+        send_metric controller: 'controller'
+      end
     end
   end
 end

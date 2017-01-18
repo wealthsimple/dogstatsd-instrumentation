@@ -10,7 +10,9 @@ module DogStatsd
       include GemConfig::Base
 
       with_configuration do
-        has :environments, classes: Array, default: ['production']
+        has :enabled, classes: [TrueClass, FalseClass], default: true
+        has :base_tags, classes: Hash, default: {}
+
         has :host, classes: String, default: Datadog::Statsd::DEFAULT_HOST
         has :port, classes: Integer, default: Datadog::Statsd::DEFAULT_PORT
         has :opts, classes: Hash, default: {}
@@ -21,13 +23,15 @@ module DogStatsd
       def self.configure
         super
         @@subscriber.unsubscribe if @@subscriber
-        @@subscriber = Subscriber.new(configuration)
+        @@subscriber = Subscriber.new(configuration) if configuration.enabled
       end
 
       @@subscriber = nil
 
       class Subscriber
         def initialize(configuration)
+          @base_tags = configuration.base_tags
+
           @statsd = Datadog::Statsd.new(
             configuration.host,
             configuration.port,
@@ -53,10 +57,10 @@ module DogStatsd
         end
 
         def instrument(stat:, value:, tags:)
-          @statsd.histogram stat, value, tags: tagify(tags)
+          @statsd.histogram stat, value, tags: Subscriber.tagify(@base_tags.merge(tags))
         end
 
-        def tagify(hash)
+        def self.tagify(hash)
           hash.select{|_,value| value.present? }.map { |key, value| "#{key}:#{value}" }
         end
 
