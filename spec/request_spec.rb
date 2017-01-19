@@ -28,7 +28,7 @@ module DogStatsd::Instrumentation
 
       context 'with populated payload' do
         it 'should produce tags' do
-          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: ['controller:controller', 'action:action', 'method:method', 'status:status'])
+          expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: ['controller:controller', 'method:method', 'status:status', 'action:controller#action'])
 
           send_metric(
             {

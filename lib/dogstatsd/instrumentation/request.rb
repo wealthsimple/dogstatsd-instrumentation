@@ -22,7 +22,7 @@ module DogStatsd
       # From GemConfig::Base
       def self.configure
         super
-        @@subscriber.unsubscribe if @@subscriber
+        @@subscriber = @@subscriber.unsubscribe if @@subscriber
         @@subscriber = Subscriber.new(configuration) if configuration.enabled
       end
 
@@ -43,10 +43,11 @@ module DogStatsd
             event = ActiveSupport::Notifications::Event.new(*args)
             tags = {
               controller: event.payload[:controller],
-              action: event.payload[:action],
               method: event.payload[:method],
               status: event.payload[:status],
             }
+
+            tags[:action] = "#{tags[:controller]}##{event.payload[:action]}" if event.payload[:action]
 
             instrument stat: 'process_action.action_controller.duration', value: event.duration, tags: tags
 
@@ -61,11 +62,12 @@ module DogStatsd
         end
 
         def self.tagify(hash)
-          hash.select{|_,value| value.present? }.map { |key, value| "#{key}:#{value}" }
+          hash.select { |_, value| value.present? }.map { |key, value| "#{key}:#{value}" }
         end
 
         def unsubscribe
           ActiveSupport::Notifications.unsubscribe @subscriber
+          nil
         end
       end
     end
