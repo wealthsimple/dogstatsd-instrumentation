@@ -13,7 +13,7 @@ module DogStatsd
       end
 
       def self.version
-        "0.1.2"
+        "0.1.3"
       end
 
       def self.version_label
