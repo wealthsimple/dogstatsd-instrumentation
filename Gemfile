@@ -8,6 +8,7 @@ end
 
 group :test do
   gem 'actionpack', require: false
+  gem 'rspec-its'
 end
 
 gem 'codecov', :require => false, :group => :test

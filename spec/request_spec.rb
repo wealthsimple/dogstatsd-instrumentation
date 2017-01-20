@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'active_support/testing/time_helpers'
-require 'action_controller/api'
 
 module DogStatsd::Instrumentation
   describe Request do
@@ -42,36 +41,20 @@ module DogStatsd::Instrumentation
       end
     end
 
-    context 'with feature disabled' do
-      before(:each) do
-        described_class.configure do |c|
-          c.enabled = false
+    context 'with default client configuration' do
+      before(:each) {
+        ClientProvider.configure do |config|
+          config.tags = ['t:1']
         end
-      end
+        described_class.configure { |_|}
+      }
 
-      it 'should do nothing' do
-        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).never
-        send_metric
-      end
-    end
-
-    context 'with base tags' do
-      let(:base_tags) { {t1: 1} }
-
-      before(:each) do
-        described_class.configure do |c|
-          c.base_tags = base_tags
+      it 'should measure duration' do
+        allow_any_instance_of(Datadog::Statsd).to receive(:histogram) do |*args|
+          expect(args[0].tags).to eq ['t:1']
         end
-      end
 
-      it 'should receive base tags' do
-        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: Request::Subscriber.tagify(base_tags))
         send_metric
-      end
-
-      it 'should merge base tags' do
-        expect_any_instance_of(Datadog::Statsd).to receive(:histogram).with('process_action.action_controller.duration', be_a(Numeric), tags: Request::Subscriber.tagify(base_tags.merge controller: 'controller'))
-        send_metric controller: 'controller'
       end
     end
   end

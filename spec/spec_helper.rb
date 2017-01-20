@@ -20,6 +20,7 @@ require "pry"
 require "pry-byebug"
 require "pry-state"
 require "active_support/all"
+require "rspec/its"
 
 require "dogstatsd/instrumentation"
 

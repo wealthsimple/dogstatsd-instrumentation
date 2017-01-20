@@ -2,3 +2,4 @@
 
 require "dogstatsd/instrumentation/identity"
 require "dogstatsd/instrumentation/request"
+require "dogstatsd"

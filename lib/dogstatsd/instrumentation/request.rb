@@ -3,6 +3,7 @@
 require 'active_support'
 require 'gem_config'
 require 'datadog/statsd'
+require_relative 'client_provider'
 
 module DogStatsd
   module Instrumentation
@@ -10,34 +11,22 @@ module DogStatsd
       include GemConfig::Base
 
       with_configuration do
-        has :enabled, classes: [TrueClass, FalseClass], default: true
-        has :base_tags, classes: Hash, default: {}
-
-        has :host, classes: String, default: Datadog::Statsd::DEFAULT_HOST
-        has :port, classes: Integer, default: Datadog::Statsd::DEFAULT_PORT
-        has :opts, classes: Hash, default: {}
-        has :max_buffer_size, classes: Integer, default: 50
+        has :statsd, classes: Object
       end
 
       # From GemConfig::Base
       def self.configure
         super
-        @@subscriber = @@subscriber.unsubscribe if @@subscriber
-        @@subscriber = Subscriber.new(configuration) if configuration.enabled
+        @@subscriber.unsubscribe if @@subscriber
+
+        @@subscriber = Subscriber.new(configuration.statsd || ClientProvider.new)
       end
 
       @@subscriber = nil
 
       class Subscriber
-        def initialize(configuration)
-          @base_tags = configuration.base_tags
-
-          @statsd = Datadog::Statsd.new(
-            configuration.host,
-            configuration.port,
-            configuration.opts,
-            configuration.max_buffer_size
-          )
+        def initialize(statsd)
+          @statsd = statsd
 
           @subscriber = ActiveSupport::Notifications.subscribe /process_action.action_controller/ do |*args|
             event = ActiveSupport::Notifications::Event.new(*args)
@@ -58,7 +47,7 @@ module DogStatsd
         end
 
         def instrument(stat:, value:, tags:)
-          @statsd.histogram stat, value, tags: Subscriber.tagify(@base_tags.merge(tags))
+          @statsd.histogram stat, value, tags: Subscriber.tagify(tags)
         end
 
         def self.tagify(hash)
